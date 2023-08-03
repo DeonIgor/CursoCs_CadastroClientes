@@ -1,0 +1,182 @@
+﻿<Window x:Class="CadastroClientes.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:CadastroClientes.ViewModel"
+        mc:Ignorable="d"
+        WindowStyle="ThreeDBorderWindow"
+        Title="Cadastro de Clientes" Height="490" Width="800" ResizeMode="NoResize">
+    
+    <Window.DataContext>
+        <vm:VMClient x:Name="VMClient"/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="DisableableTextBox">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsNotEditing}" Value="True">
+                    <Setter Property="Foreground" Value="Gray" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+
+    <Border BorderBrush="LightGray" BorderThickness="1" Margin="5,0,5,5">
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" Height="25">
+                <MenuItem Header="_Arquivo" Height="25">
+                    <MenuItem Header="Exportar" Command="{Binding SaveFileCommand}" />
+                </MenuItem>
+                <MenuItem Header="_Editar" Height="25">
+                    <MenuItem Command="ApplicationCommands.Copy" />
+                    <MenuItem Command="ApplicationCommands.Cut" />
+                    <MenuItem Command="ApplicationCommands.Paste" />
+                </MenuItem>
+                <MenuItem Header="_Cliente" Height="25">
+                    <MenuItem Header="_Novo" Click="SaveButtonClick" IsEnabled="{Binding ClientNotSelected}" />
+                    <MenuItem Header="E_xcluir" Command="{Binding DeleteCommand}" IsEnabled="{Binding ClientSelected}" />
+                    <MenuItem Header="_Editar" Command="{Binding EditCommand}" IsEnabled="{Binding ClientSelected}" />
+                    <MenuItem Header="_Salvar" Click="SaveButtonClick" IsEnabled="{Binding ClientSelected}" />
+                    <MenuItem Header="Cance_lar" Command="{Binding CancelCommand}" IsEnabled="{Binding ClientSelected}" />
+                </MenuItem>
+            </Menu>
+
+            <Grid DockPanel.Dock="Bottom" Name="Content_grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="205" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Name="List_grid" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" x:Name="SearchText" Width="195" Height="25" Padding="2.5" Margin="0,5" 
+                                Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Loaded="SearchTextLostFocus"
+                                GotFocus="SearchTextGotFocus"
+                                LostFocus="SearchTextLostFocus" />
+
+                    <ListBox Grid.Row="1" Name="Client_list" ItemsSource="{Binding ClientResultList, Mode=OneWay}" 
+                             SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" />
+                </Grid>
+
+                <DockPanel Grid.Column="1" Name="Registration_menu">
+
+                    <Grid DockPanel.Dock="Top" Name="Registration_info">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Grid.Row="0" Name="Client_info" Margin="5" Header="Dados Pessoais" Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Nome: *" Margin="0,2" />
+                                <TextBox Grid.Row="0" Grid.Column="1" x:Name="InputName" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedClient.Name, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="E-mail: *" Margin="0,2" />
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="InputEmail" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedClient.Email, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="2" Grid.Column="0" Content="Telefone:" Margin="0,2" />
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="InputPhone" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedClient.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Row="1" Name="Address_info" Margin="5" Header="Endereço" Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                
+                                <Label Grid.Row="0" Grid.Column="0" Content="CEP: *" Margin="0,2" />
+                                <TextBox Grid.Row="0" Grid.Column="1" x:Name="InputCEP" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddress.CEP, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+                                
+                                <Label Grid.Row="1" Grid.Column="0" Content="Rua: *" Margin="0,2" />
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="InputStreet" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddress.Street, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="2" Grid.Column="0" Content="Numero: *" Margin="0,2" />
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="InputNumber" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddressNumberString, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="3" Grid.Column="0" Content="Cidade: *" Margin="0,2" />
+                                <TextBox Grid.Row="3" Grid.Column="1" x:Name="InputCity" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddress.City, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="4" Grid.Column="0" Content="Bairro:" Margin="0,2" />
+                                <TextBox Grid.Row="4" Grid.Column="1" x:Name="InputNeighborhood" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddress.Neighborhood, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+
+                                <Label Grid.Row="5" Grid.Column="0" Content="Complemento:" Margin="0,2" />
+                                <TextBox Grid.Row="5" Grid.Column="1" x:Name="InputAdditional" Height="25" Padding="2.5"
+                                         Style="{StaticResource DisableableTextBox}"
+                                         Text="{Binding SelectedAddress.AdditionalInfo, Mode=TwoWay, UpdateSourceTrigger=Explicit}" 
+                                         IsReadOnly="{Binding IsNotEditing}" />
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+
+                    <StackPanel DockPanel.Dock="Bottom" Name="Buttons" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Name="New_button" Content="Novo" Height="35" Width="70" Margin="5,2" 
+                                Click="SaveButtonClick" IsEnabled="{Binding ClientNotSelected}" />
+                        
+                        <Button Name="Delete_button" Content="Excluir" Height="35" Width="70" Margin="5,2" 
+                                Command="{Binding DeleteCommand}" IsEnabled="{Binding ClientSelected}" />
+                        
+                        <Button Name="Edit_button" Content="Editar" Height="35" Width="70" Margin="5,2" 
+                                Command="{Binding EditCommand}" IsEnabled="{Binding ClientSelected}" />
+                        
+                        <Button Name="Save_button" Content="Salvar" Height="35" Width="70" Margin="5,2" 
+                                Click="SaveButtonClick" IsEnabled="{Binding ClientSelected}" />
+                        
+                        <Button Name="Cancel_button" Content="Cancelar" Height="35" Width="70" Margin="5,2" 
+                                Command="{Binding CancelCommand}" IsEnabled="{Binding ClientSelected}" />
+                    </StackPanel>
+                </DockPanel>
+            </Grid>
+        </DockPanel>
+    </Border>
+</Window>
